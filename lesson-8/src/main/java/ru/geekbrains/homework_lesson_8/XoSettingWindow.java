@@ -19,28 +19,29 @@ public class XoSettingWindow extends JFrame {
     private static final String FIELD_SIZE_PREFIX = "Размер поля: ";
     private static final String WIN_LENGTH_PREFIX = "Длина победы в символах: ";
 
-    private XoWindowNew xoWindowNew;   //ссылка на основное игровое поле, чтобы передать данные о игре в основное окно игры
+    private XoWindow xoWindow;   //ссылка на основное игровое поле, чтобы передать данные о игре в основное окно игры
     private JRadioButton humVSAI;      //кнопка которая говорит или или (в данном случае выбор между АИ и человеком)
     private JRadioButton humVShum;     //кнопка которая говорит или или (в данном случае выбор между АИ и человеком)
     private JSlider slideWinLen;       //кнопка слайдер для выбора длины победы в игре
     private JSlider slideFieldSize;    //кнопка слайдер для выбора размера игрового поля от 3 до 10
 
-    public XoSettingWindow(XoWindowNew xoWindowNew){
+    public XoSettingWindow(XoWindow xoWindow){
+
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        this.xoWindowNew = xoWindowNew;
+        this.xoWindow = xoWindow;
         // вычесляем точку по высоте и по ширине для окна настроек чтобы поместить его в центр основного поля
-        Rectangle gameWindowBounds = xoWindowNew.getBounds();
+        Rectangle gameWindowBounds = xoWindow.getBounds();
         int posX = (int) gameWindowBounds.getCenterX() - WINDOW_WIDTH / 2;
         int posY = (int) gameWindowBounds.getCenterY() - WINDOW_HEIGHT / 2;
         setLocation(posX, posY);                     // распологаем окно настроек в чтоке X и Y
+        setResizable(false);                         // запрет на изменение окна настроек
+        setTitle("Создать игру");                    // заполнение верхнего поля названием окна
+        setLayout(new GridLayout(8,1));
         addGameModeButtons();
         addGameControls();
 
-        setTitle("Создать игру");                    // заполнение верхнего поля названием окна
-        setResizable(false);                         // запрет на изменение окна настроек
-        setLayout(new GridLayout(8,1));
-
-        JButton btnStart = new JButton("Создать новую игру");    // заголовок кнопки
+        // заголовок кнопки
+        JButton btnStart = new JButton("Создать новую игру");
         btnStart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,25 +98,21 @@ public class XoSettingWindow extends JFrame {
         add(slideFieldSize);
         add(lbWinLength);
         add(slideWinLen);
-
     }
 
-    private void classStartGame(){
-        int gameMod;
+    public void classStartGame(){
+        int gameMode;
         // передача выбранного режима игры против АИ или Человека
         if(humVSAI.isSelected()){
-            gameMod = XoFieldPanel.GAME_MODE_HVSAI;
+            gameMode = XoConstants.GAME_MODE_HVSAI;
         } else if (humVShum.isSelected()){
-            gameMod = XoFieldPanel.GAME_MODE_HVSH;
+            gameMode = XoConstants.GAME_MODE_HVSH;
         } else{
             throw new RuntimeException("Данный режим игры не поддерживается");
         }
-
         int fieldSize = slideFieldSize.getValue();        //передаем значения длины поля
         int winLenght = slideWinLen.getValue();           //передаем значение длины победы
-        xoWindowNew.startGame(gameMod, fieldSize, winLenght);
+        xoWindow.startGame(gameMode, fieldSize, winLenght);
         setVisible(false);              //закрываем окно настроек после нажатия на кнопку создать игру
     }
-
-
 }
